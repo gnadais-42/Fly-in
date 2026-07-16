@@ -1,5 +1,5 @@
 from webcolors import name_to_hex
-from simulation import Graph, Node, Edge
+from simulation import Simulation, Hub, Connection
 
 class ParsingError(Exception):
     pass
@@ -24,7 +24,7 @@ class Parser:
             return False
     
     @classmethod
-    def parse_file(cls, filename: str) -> None:
+    def parse_file(cls, filename: str) -> int:
         try:
             with open(filename) as f:
                 n_line: int = 1
@@ -55,10 +55,11 @@ class Parser:
                     n_line += 1
         except (FileNotFoundError, PermissionError) as e:
             print(e)
-            return
+            return 1
         except ParsingError as e:
             print(f"Parsing Error on line {n_line}:", e)
-            return
+            return 1
+        return 0
     
     @classmethod
     def parse_first_line(cls, line: str) -> None:
@@ -179,8 +180,34 @@ class Parser:
         cls.connections[zone2].append((zone1, max_link))
 
 
-def create_simulation() -> Simulation:
+def create_simulation(filename: str) -> Simulation | None:
+    if Parser.parse_file(filename) != 0:
+        return None
     
+    hubs: list[Hub] = []
+    dict_hubs: dict[str, Hub] = {}
+    connections: list[Connection] = []
+    for name, attributes in Parser.zones.items():
+        hub = Hub(name, attributes)
+        hubs.append(hub)
+        dict_hubs[name] = hub
+
+    for source_name, target_list in Parser.connections.items():
+        for target_name, capacity in target_list:
+            connections.append(Connection(dict_hubs[source_name],
+                                          dict_hubs[target_name],
+                                          capacity))
+    
+    start_hub: Hub = dict_hubs[Parser.start]
+    end_hub: Hub = dict_hubs[Parser.end]
+        
+    sim = Simulation(Parser.nb_drones,
+                     hubs,
+                     connections,
+                     start_hub,
+                     end_hub)
+    
+    return sim
 
 
 if __name__ == "__main__":
