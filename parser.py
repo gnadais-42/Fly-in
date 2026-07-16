@@ -1,4 +1,5 @@
 from webcolors import name_to_hex
+from simulation import Graph, Node, Edge
 
 class ParsingError(Exception):
     pass
@@ -95,6 +96,8 @@ class Parser:
             raise ParsingError("Coordinates must be valid integers")
         modifiers = attributes[4::]
         cls.parse_hub_mods(modifiers, cls.zones[attributes[1]])
+        if prefix == "start_hub" or prefix == "end_hub":
+            cls.zones[attributes[1]]["max_drones"] = None
         return(attributes[1])
 
     @staticmethod
@@ -174,7 +177,11 @@ class Parser:
                 raise ParsingError(f"'{mods[1]}' is not a valid integer")
         cls.connections[zone1].append((zone2, max_link))
         cls.connections[zone2].append((zone1, max_link))
-        
+
+
+def create_simulation() -> Simulation:
+    
+
 
 if __name__ == "__main__":
     Parser.parse_file("test.txt")
