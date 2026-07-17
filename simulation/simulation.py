@@ -2,12 +2,13 @@ from .drone import Drone
 from .hub import Hub
 from .connection import Connection
 from .map import Map
+from . import Location
 
 class Simulation:
     def __init__(self, n_drones: int, hubs: list[Hub], connections: list[Connection], start: Hub, end: Hub):
         self.drones: list[Drone] = []
         self.map: Map = Map(hubs, connections, start, end)
-        self.moves: dict[Drone, list[Hub, Connection]]
+        self.moves: dict[Drone, list[Location]] = {}
         self.turn: int = 0
         for i in range(n_drones):
             drone = Drone(start, f"D-{i + 1}")

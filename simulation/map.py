@@ -4,7 +4,7 @@ from graph import Graph
 
 class Map(Graph):
     def __init__(self, hubs: list[Hub], connections: list[Connection], start: Hub, end: Hub):
-        super.__init__(hubs, connections)
+        super().__init__(hubs, connections)
 
         self._start = start
         self._end = end
